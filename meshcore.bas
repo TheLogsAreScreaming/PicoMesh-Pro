@@ -108,6 +108,7 @@ gLastMenu$ = ""
 Print "PicoMesh Pro "; gAppVersion$
 Print "Based on PicoMeshCore by Vigoleis912 (GPL-3.0)"
 Print
+ShowSavedChannelsHint
 
 ' Flush any old bytes and allow the radio to finish booting
 FlushInput
@@ -620,6 +621,10 @@ Sub DoRestoreLocalChannels
 
   If Dir$("CHANNELS.TXT") = "" Then
     Print "CHANNELS.TXT not found; current local channels unchanged"
+    If Dir$("CHANNELS.TMP") <> "" Then
+      Print "CHANNELS.TMP exists from an interrupted export"
+      Print "Rename it to CHANNELS.TXT to restore from it"
+    End If
     Exit Sub
   End If
 
@@ -710,6 +715,17 @@ Sub DoRestoreLocalChannels
   Print "Private keys not restored; radio settings unchanged"
 End Sub
 
+' Channel mappings are not loaded automatically, so say when a saved list exists.
+Sub ShowSavedChannelsHint
+  Local found$
+  On Error Skip 1
+  found$ = Dir$("CHANNELS.TXT")
+  If MM.Errno = 0 And found$ <> "" Then
+    Print "Saved channel list found: Channels > Restore local channel names"
+    Print
+  End If
+End Sub
+
 Sub DoExportLocalChannels
   Local confirm$
   Local i
@@ -718,7 +734,7 @@ Sub DoExportLocalChannels
   Local nameChar$
 
   Print "Export local channel names and radio indexes"
-  Print "This overwrites CHANNELS.TXT on the current drive"
+  Print "This replaces CHANNELS.TXT on the current drive"
   Print "Private channel keys will not be saved"
   Line Input "Type EXPORT to continue: ", confirm$
   If confirm$ <> "EXPORT" Then
@@ -727,9 +743,9 @@ Sub DoExportLocalChannels
   End If
 
   On Error Skip 1
-  Open "CHANNELS.TXT" For Output As #2
+  Open "CHANNELS.TMP" For Output As #2
   If MM.Errno <> 0 Then
-    Print "Could not write CHANNELS.TXT: "; MM.ErrMsg$
+    Print "Could not write CHANNELS.TMP: "; MM.ErrMsg$
     Print "Check the drive is present and not write-protected"
     Print
     Exit Sub
@@ -747,6 +763,27 @@ Sub DoExportLocalChannels
     Print #2, Trim$(Str$(channelIdx(i))); "|"; safeName$
   Next i
   Close #2
+
+  ' The old backup stays in place until the new file is fully written.
+  ' Rename fails on FAT if the target exists, so the old file goes first.
+  If Dir$("CHANNELS.TXT") <> "" Then
+    On Error Skip 1
+    Kill "CHANNELS.TXT"
+    If MM.Errno <> 0 Then
+      Print "Could not replace CHANNELS.TXT: "; MM.ErrMsg$
+      Print "The new backup is saved as CHANNELS.TMP"
+      Print
+      Exit Sub
+    End If
+  End If
+  On Error Skip 1
+  Rename "CHANNELS.TMP" As "CHANNELS.TXT"
+  If MM.Errno <> 0 Then
+    Print "Could not rename CHANNELS.TMP: "; MM.ErrMsg$
+    Print "The new backup is saved as CHANNELS.TMP"
+    Print
+    Exit Sub
+  End If
   Print "Exported "; channelCount; " local mappings to CHANNELS.TXT"
   Print "No keys exported; no automatic restore is implemented"
   Print
