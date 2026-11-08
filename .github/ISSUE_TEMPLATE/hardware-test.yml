@@ -31,7 +31,7 @@ body:
     attributes:
       label: PicoMesh Pro version
       description: Shown on the first line when the program starts (also under Device > Show status).
-      placeholder: 0.1.0-dev
+      placeholder: 0.1.0-rc.1
     validations:
       required: true
   - type: input

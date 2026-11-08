@@ -49,6 +49,8 @@ See [original wiring and firmware setup instructions](docs/UPSTREAM_README.md) b
 5. Run the BASIC program on the PicoMite. The first line shows the PicoMesh Pro version; include it, together with the commit SHA, in any report. Start with read-only device queries before attempting sends or channel changes.
 6. For validation, follow the [UART command-response hardware test plan](docs/UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md) and [release-readiness checklist](docs/RC_READINESS_CHECKLIST.md).
 
+Downloads are on [PicoMesh-Pro-Releases](https://github.com/TheLogsAreScreaming/PicoMesh-Pro-Releases/releases). `v0.1.0-rc.1` is a prerelease that has not been tested on hardware.
+
 This is not yet a verified step-by-step installation procedure for every PicoCalc/PicoMite configuration.
 
 ## Development and testing

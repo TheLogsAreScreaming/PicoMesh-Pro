@@ -1,6 +1,6 @@
-# PicoMesh Pro v0.1.0-rc.1 — DRAFT release notes
+# PicoMesh Pro v0.1.0-rc.1 — release notes
 
-**NOT PUBLISHED — release on hold pending CI and physical hardware validation.**
+**Prerelease, not tested on hardware.** This version has never been run on a PicoMite, PicoCalc or MeshCore radio. Only source-level Python checks have passed. Published at the owner's direction on 2026-11-08 so testers can try it.
 
 PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected over UART to a compatible MeshCore companion radio. It builds on Vigoleis912/PicoMeshCore.
 
@@ -20,7 +20,7 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
   - Channel scan and import no longer get out of step, and import reports every skipped slot.
   - Legacy direct messages are parsed with the correct layout.
   - Reconnect hint after three unanswered commands; bounded startup and response waits; file errors on channel backup are reported.
-- The program shows its version (`0.1.0-dev` until the RC) at startup and in Device > Show status.
+- The program shows its version (`0.1.0-rc.1`) at startup and in Device > Show status.
 
 ## Known limitations
 
@@ -35,13 +35,13 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
 ## Before publication
 
 - [ ] Choose and record exact candidate commit SHA.
-- [ ] Change `gAppVersion$` from `0.1.0-dev` to `0.1.0-rc.1` in that commit.
+- [x] Change `gAppVersion$` from `0.1.0-dev` to `0.1.0-rc.1` in that commit.
 - [ ] Confirm matching GitHub Actions run succeeded; save test artifact URL.
-- [ ] Complete and document real hardware smoke tests.
+- [ ] Complete and document real hardware smoke tests. **Not done for this prerelease; required before any final release.**
 - [ ] Confirm firmware, wiring and installation instructions.
 - [ ] Review GPL-3.0 attribution, README, and privacy of included materials.
-- [ ] Obtain explicit owner approval to publish.
+- [x] Obtain explicit owner approval to publish (2026-11-08, as an untested prerelease).
 
 See [readiness checklist](RC_READINESS_CHECKLIST.md), [evidence log](RC_EVIDENCE_LOG.md) and [hardware test plan](UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md).
 
-**Do not present this draft as a published or hardware-validated release.**
+**Do not present this prerelease as hardware-validated.**
