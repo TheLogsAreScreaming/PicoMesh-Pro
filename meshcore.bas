@@ -58,9 +58,12 @@ Const CLOCK_CONFIRM_AHEAD_S = 86400
 ' Longest the startup raw-byte dump may run.
 Const BOOT_READ_MAX_MS = 5000
 
-' ACK code of the last direct message still waiting for confirmation, so a
-' confirmation arriving after the wait window can still be reported.
-Dim gPendingAck$
+' ACK codes of recent direct messages still waiting for confirmation, so a
+' confirmation arriving after the wait window can still be reported. When
+' full, the oldest entry is replaced.
+Const PENDING_ACK_MAX = 8
+Dim gPendingAck$(PENDING_ACK_MAX) Length 4
+Dim gPendingNext
 
 ' Consecutive commands that got no response; drives the reconnect hint.
 Dim gNoReplyCount
@@ -2260,15 +2263,27 @@ Sub HandleAsyncFrame(a$)
   End Select
 End Sub
 
-' Report and clear gPendingAck$ when a SEND_CONFIRMED push matches it.
+' Remember an unconfirmed message, replacing the oldest entry when full.
+Sub AddPendingAck(ackKey$)
+  gPendingAck$(gPendingNext) = ackKey$
+  gPendingNext = (gPendingNext + 1) Mod (PENDING_ACK_MAX + 1)
+End Sub
+
+' Report and clear the matching entry when a SEND_CONFIRMED push arrives.
 Function CheckLateAck(a$)
+  Local i, k$
   CheckLateAck = 0
-  If Len(gPendingAck$) <> 4 Or Len(a$) < 5 Then Exit Function
+  If Len(a$) < 5 Then Exit Function
   If Asc(Mid$(a$, 1, 1)) <> 130 Then Exit Function
-  If Mid$(a$, 2, 4) <> gPendingAck$ Then Exit Function
-  Print "Late delivery confirmation: your last direct message was delivered"
-  gPendingAck$ = ""
-  CheckLateAck = 1
+  k$ = Mid$(a$, 2, 4)
+  For i = 0 To PENDING_ACK_MAX
+    If Len(gPendingAck$(i)) = 4 And gPendingAck$(i) = k$ Then
+      Print "Late delivery confirmation: an earlier direct message was delivered"
+      gPendingAck$(i) = ""
+      CheckLateAck = 1
+      Exit Function
+    End If
+  Next i
 End Function
 
 Function ReadFrame$(timeoutMs)
@@ -3080,9 +3095,7 @@ Sub DoSendMessage
       Print "Queued, no delivery confirmation yet"
       Print "A later confirmation will be reported when it arrives"
       Print
-      gPendingAck$ = ackKey$
-    Else
-      gPendingAck$ = ""
+      AddPendingAck ackKey$
     End If
   End If
 End Sub
