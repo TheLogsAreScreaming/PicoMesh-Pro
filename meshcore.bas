@@ -1,5 +1,10 @@
 Option Explicit
 
+' PicoMesh Pro version shown at startup and in Device > Show status.
+' Testers report this together with the source commit SHA.
+Dim gAppVersion$
+gAppVersion$ = "0.1.0-dev"
+
 Const FRAME_TIMEOUT = 3000
 
 ' Global device info
@@ -100,7 +105,8 @@ Open "COM2:115200,2048" As #1
 gRunning = 1
 gLastMenu$ = ""
 
-Print "MeshCore Pico Client"
+Print "PicoMesh Pro "; gAppVersion$
+Print "Based on PicoMeshCore by Vigoleis912 (GPL-3.0)"
 Print
 
 ' Flush any old bytes and allow the radio to finish booting
@@ -2064,6 +2070,8 @@ End Sub
 
 Sub ShowStatus
   Print "=== STATUS ==="
+  Print
+  Print "PicoMesh Pro: "; gAppVersion$
   Print
 
   Print "Device info"

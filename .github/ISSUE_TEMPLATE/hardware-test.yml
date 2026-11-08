@@ -27,6 +27,14 @@ body:
     validations:
       required: true
   - type: input
+    id: app_version
+    attributes:
+      label: PicoMesh Pro version
+      description: Shown on the first line when the program starts (also under Device > Show status).
+      placeholder: 0.1.0-dev
+    validations:
+      required: true
+  - type: input
     id: board
     attributes:
       label: PicoMite / PicoCalc model and MMBasic firmware version
@@ -147,6 +155,78 @@ body:
     id: result_reconnect
     attributes:
       label: "Disconnect/reconnect and extended smoke test"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_buffer
+    attributes:
+      label: "Startup with 2048-byte receive buffer (or 1024 fallback)"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_contacts50
+    attributes:
+      label: "Sync of 50+ contacts matches expected count"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_length
+    attributes:
+      label: "Message length limits (direct 160, channel name prefix)"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_delivery
+    attributes:
+      label: "Delivery matched to message, late confirmation reported"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_clock_apply
+    attributes:
+      label: "Unset-clock sync skip and radio settings APPLY"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_import_files
+    attributes:
+      label: "Channel import summary and file-error handling"
       options:
         - NOT TESTED
         - PASS

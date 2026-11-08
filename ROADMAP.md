@@ -13,15 +13,20 @@ This document separates **implemented in source** from **validated on hardware**
 - [x] Add UART framing, partial-frame timeout recovery and bounded asynchronous response handling
 - [x] Add Python source-level regression tests and GitHub Actions workflow
 - [x] Document UART command-response and channel restore hardware test scenarios
+- [x] Source reliability audit ([RELIABILITY_AUDIT.md](docs/RELIABILITY_AUDIT.md)), with fixes for all 13 findings except atomic export (#83–#92)
+- [x] Simulated contact, direct-send, polling, channel and UART-interruption scenarios
+- [x] Hardware tester program and issue form
+- [x] Version banner at startup (`gAppVersion$`)
 
 ## Still required for v0.1.0-rc.1
 
-- [ ] Review current `main` and verify all intended fixes are merged
-- [ ] Resolve or explicitly accept the High findings (R1, R2) in the [reliability audit](docs/RELIABILITY_AUDIT.md)
+- [x] Review current `main` and verify all intended fixes are merged (2026-11-07, `082e756`)
+- [x] Resolve the High findings (R1, R2) in the [reliability audit](docs/RELIABILITY_AUDIT.md), fixed in source; confirm on hardware below
 - [ ] Verify CI status on the exact candidate commit
 - [ ] Run PicoMite/PicoCalc + MeshCore companion hardware tests, recording firmware and wiring
 - [ ] Confirm startup, contacts, messages, channel send, backup/restore and reconnect behavior
-- [ ] Review documentation and add real, privacy-safe screenshots
+- [ ] Add real, privacy-safe screenshots (documentation synced with source on 2026-11-07)
+- [ ] Decide on atomic channel export (audit R13) or record it as a known limitation
 - [ ] Record limitations and publish release notes only after the release gates are met
 
 See [release-readiness checklist](docs/RC_READINESS_CHECKLIST.md).
