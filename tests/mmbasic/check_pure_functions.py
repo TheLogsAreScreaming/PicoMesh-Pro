@@ -14,7 +14,7 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SOURCE = (ROOT / "meshcore.bas").read_text(encoding="utf-8").replace("\r\n", "\n")
-FUNCTIONS = ["U32ToLE$", "U32LEVal", "IsWholeNumber", "IsDecimalNumber", "IsLoraBandwidth", "DateTimeToUnix", "UnixToDate$"]
+FUNCTIONS = ["U32ToLE$", "U32LEVal", "IsWholeNumber", "IsDecimalNumber", "IsLoraBandwidth", "DateTimeToUnix", "UnixToDate$", "Pad2$", "Pad4$", "Pad3$"]
 
 
 def extract(name):
