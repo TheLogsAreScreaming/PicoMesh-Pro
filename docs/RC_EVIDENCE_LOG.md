@@ -1,10 +1,10 @@
 # PicoMesh Pro — release evidence log
 
-Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-level test workflow is **not** evidence that the MMBasic program runs on hardware. Leave fields **NOT TESTED** until actual evidence is available.
+Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-level test workflow is **not** evidence that the MMBasic program runs on hardware. Leave fields **NOT TESTED** until actual evidence is available. The last six hardware rows cover the [reliability-audit](RELIABILITY_AUDIT.md) fixes; scenarios 8–16 in the [UART test plan](UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md) describe them.
 
 ## Candidate identity
 
-- Candidate commit SHA (CI-verified baseline): `eccf8d517b6d6470a1d98faa8c2896ee550499e4` (reverify if candidate changes)
+- Candidate commit SHA (CI-verified baseline): `082e756c57514b86101cfae50e236b870ae66749` (reverify if candidate changes)
 - Date / tester: **NOT RECORDED**
 - PicoMite/PicoCalc model and firmware: **NOT RECORDED**
 - MeshCore companion model and firmware: **NOT RECORDED**
@@ -12,12 +12,12 @@ Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-le
 
 ## Automated checks
 
-- GitHub Actions run URL: https://github.com/TheLogsAreScreaming/PicoMesh-Pro/actions/runs/42320456867 (`push` on `main`)
-- Commit SHA shown in run metadata: `eccf8d517b6d6470a1d98faa8c2896ee550499e4` (`main`, merge of #81)
+- GitHub Actions run URL: https://github.com/TheLogsAreScreaming/PicoMesh-Pro/actions/runs/42391882087 (`push` on `main`)
+- Commit SHA shown in run metadata: `082e756c57514b86101cfae50e236b870ae66749` (`main`, merge of #92; all reliability-audit fixes)
 - Job conclusion: **SUCCESS** (`source-regressions`; all reported steps succeeded)
 - Test suite: `python -m unittest discover -s tests -v` (source-level checks only)
-- Test log artifact: `source-test-results` (artifact ID `13552214062`, downloaded and reviewed 2026-11-06: 114 tests, 0 failures, 0 errors, `OK`; 56 prior + 28 session scenarios #78 + 25 channel/UART interruption #79 + 5 issue-form checks #81)
-- Superseded baselines: run 41754015177 at `2065f65c1d3c3aaa02f584f46efc0401e6f4fc2d` (56 tests, `OK`); run 41743741668 at `13dc8221ce0edc47622d0777fb5d51896d69ad86` (49 tests, `OK`)
+- Test log artifact: `source-test-results` (artifact ID `13581907070`, downloaded and reviewed 2026-11-07: 167 tests, 0 failures, 0 errors, `OK`)
+- Superseded baselines: run 42320456867 at `eccf8d517b6d6470a1d98faa8c2896ee550499e4` (114 tests, `OK`); run 41754015177 at `2065f65c1d3c3aaa02f584f46efc0401e6f4fc2d` (56 tests, `OK`); run 41743741668 at `13dc8221ce0edc47622d0777fb5d51896d69ad86` (49 tests, `OK`)
 - Failures and follow-up issues: **NONE REPORTED BY JOB** (hardware issues not assessed)
 
 ## Hardware checks
@@ -33,6 +33,12 @@ Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-le
 | Channel export/restore and malformed backup | NOT TESTED | |
 | Partial UART frames, timeout and recovery | NOT TESTED | |
 | Disconnect/reconnect and extended smoke test | NOT TESTED | |
+| Startup with 2048-byte receive buffer (or 1024 fallback) | NOT TESTED | |
+| Sync of 50+ contacts matches expected count | NOT TESTED | |
+| Message length limits (direct 160, channel name prefix) | NOT TESTED | |
+| Delivery matched to message, late confirmation reported | NOT TESTED | |
+| Unset-clock sync skip and radio settings APPLY | NOT TESTED | |
+| Channel import summary and file-error handling | NOT TESTED | |
 
 ## Release decision
 

@@ -14,7 +14,7 @@ We need volunteers with a PicoMite/PicoCalc and a compatible MeshCore UART compa
 
 ## Suggested staged test session
 
-1. Record source commit SHA, board/firmware versions and wiring (without secrets).
+1. Record source commit SHA, the PicoMesh Pro version shown at startup, board/firmware versions and wiring (without secrets).
 2. Load program; verify menu appears and does not crash.
 3. Read-only device query, time sync and startup responses.
 4. Contact sync with quiet and active traffic.
@@ -22,6 +22,7 @@ We need volunteers with a PicoMite/PicoCalc and a compatible MeshCore UART compa
 6. Export/restore channel name/index metadata, including malformed input; verify reserved #public behavior.
 7. Partial-frame, timeout and reconnect tests, only if safely reproducible.
 8. Note stability and any unexpected output during an extended smoke test.
+9. If time allows, run scenarios 8–16 in the UART test plan, which cover the reliability-audit fixes.
 
 ## How to report
 

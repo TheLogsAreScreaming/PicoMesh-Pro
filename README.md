@@ -10,12 +10,12 @@ PicoMesh Pro builds on [Vigoleis912's PicoMeshCore](https://github.com/Vigoleis9
 
 | Area | Current capabilities |
 | --- | --- |
-| Messaging | Direct-message workflows and channel message reception inherited from upstream; channel sending extended beyond the original #public-only workflow |
+| Messaging | Direct and channel messages. "Delivered" is shown only when the radio's confirmation matches the message you sent, and a confirmation that arrives late is still reported. Text is limited to what the radio accepts (160 characters direct; 160 minus your `"<node name>: "` prefix on channels) |
 | Channels | Local channel listing and selection; validation of channel names and indexes; protection of reserved #public mapping |
 | Backup and restore | Export and staged restore of local channel names/index mappings; malformed data is rejected before applying changes |
-| Device controls | Contact synchronization, device information, time synchronization, radio settings and diagnostics from the upstream client |
-| UART reliability | Frame length and timeout checks, partial-frame recovery, bounded async-response handling and clearer uncertain-send feedback |
-| Tests | Python source-level regression checks and documented hardware test scenarios |
+| Device controls | Contact synchronization (once per session, retried if incomplete), device information, time synchronization that is skipped when the Pico clock looks unset, radio settings and TX power checked and confirmed with `APPLY`, and diagnostics |
+| UART reliability | 2048-byte receive buffer, resynchronisation on bad or cut-off frames (good frames that follow are kept), bounded waits, and a hint to re-initialize when the radio stops answering |
+| Tests | Python source-level regression checks and reference models, a [reliability audit](docs/RELIABILITY_AUDIT.md), and documented hardware test scenarios |
 
 **Important limitations:** backup files do **not** contain private channel keys; private-key configuration and path-hash-size switching are not confirmed implemented. Source-level tests are not a substitute for hardware validation.
 
@@ -44,9 +44,10 @@ See [original wiring and firmware setup instructions](docs/UPSTREAM_README.md) b
 
 1. Set up the PicoMite and MeshCore companion radio according to the [upstream hardware guide](docs/UPSTREAM_README.md).
 2. Obtain [`meshcore.bas`](meshcore.bas) from this repository and transfer it to your PicoMite using your usual MMBasic file-transfer workflow.
-3. Confirm the radio is configured for UART companion operation and that the program's `COM2:115200` setting matches the wiring and radio baud rate.
-4. Run the BASIC program on the PicoMite and start with read-only device queries before attempting sends or channel changes.
-5. For validation, follow the [UART command-response hardware test plan](docs/UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md) and [release-readiness checklist](docs/RC_READINESS_CHECKLIST.md).
+3. Confirm the radio is configured for UART companion operation and that the program's `COM2:115200,2048` setting matches your wiring and the radio's baud rate. The second field is the receive buffer size in bytes. If your PicoMite firmware rejects it, change it to `1024`.
+4. Set the Pico clock before starting (`DATE$` and `TIME$`). With an unset clock the program skips radio time sync and warns that message timestamps will be wrong.
+5. Run the BASIC program on the PicoMite. The first line shows the PicoMesh Pro version; include it, together with the commit SHA, in any report. Start with read-only device queries before attempting sends or channel changes.
+6. For validation, follow the [UART command-response hardware test plan](docs/UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md) and [release-readiness checklist](docs/RC_READINESS_CHECKLIST.md).
 
 This is not yet a verified step-by-step installation procedure for every PicoCalc/PicoMite configuration.
 

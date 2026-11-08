@@ -5,9 +5,9 @@ This checklist records release gates, not claims of completed hardware testing.
 ## Source and documentation
 - [ ] All intended PRs merged and `main` reviewed for accidental regressions
 - [ ] GitHub Actions static checks green on the exact candidate commit
-- [ ] README accurately reflects implemented features and known limitations
-- [ ] GPL-3.0 attribution and upstream source retained
-- [ ] No private channel keys, credentials, or personal radio data included
+- [ ] README accurately reflects implemented features and known limitations (synced 2026-11-07; confirm after hardware testing)
+- [x] GPL-3.0 attribution and upstream source retained (`LICENSE`, `docs/UPSTREAM_README.md`, startup banner; checked 2026-11-07)
+- [x] No private channel keys, credentials, or personal radio data included (repository scan 2026-11-07; recheck at the candidate commit)
 - [ ] Installation and UART wiring instructions reviewed for the target PicoMite firmware
 
 ## Hardware acceptance (must be observed on real devices)

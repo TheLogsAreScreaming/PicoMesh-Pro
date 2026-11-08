@@ -11,6 +11,16 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
 - Local channel name/index mapping export and staged restore, with malformed-file rejection. Backups do **not** contain private channel keys.
 - UART framing length checks, partial-frame timeout handling and bounded asynchronous traffic during selected command-response flows.
 - Source-level Python regression tests and GitHub Actions workflow.
+- Reliability fixes from the [source audit](RELIABILITY_AUDIT.md), all pending hardware confirmation:
+  - Long messages are refused with a clear message instead of stopping the program, and text is limited to what the radio accepts (160 characters direct; channel text minus the node-name prefix the radio adds).
+  - "Delivered" is shown only when the confirmation matches the message sent; late confirmations are reported.
+  - Contacts sync once per session, and an incomplete sync is retried.
+  - Larger UART receive buffer (2048 bytes) and resynchronisation on bad or cut-off frames.
+  - Radio time sync is skipped when the Pico clock looks unset; radio settings and TX power are checked and need a typed `APPLY`.
+  - Channel scan and import no longer get out of step, and import reports every skipped slot.
+  - Legacy direct messages are parsed with the correct layout.
+  - Reconnect hint after three unanswered commands; bounded startup and response waits; file errors on channel backup are reported.
+- The program shows its version (`0.1.0-dev` until the RC) at startup and in Device > Show status.
 
 ## Known limitations
 
@@ -18,10 +28,14 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
 - Python tests inspect source-level invariants; they do not execute MMBasic or validate radio interoperability.
 - Private channel key management and path hash size controls are not confirmed features.
 - No verified device screenshots are available yet.
+- Channel backup export overwrites `CHANNELS.TXT` in place; a power cut during export can lose the previous backup.
+- Local channel changes are not saved across restarts unless exported.
+- Only the most recent unconfirmed direct message is tracked for late confirmation.
 
 ## Before publication
 
 - [ ] Choose and record exact candidate commit SHA.
+- [ ] Change `gAppVersion$` from `0.1.0-dev` to `0.1.0-rc.1` in that commit.
 - [ ] Confirm matching GitHub Actions run succeeded; save test artifact URL.
 - [ ] Complete and document real hardware smoke tests.
 - [ ] Confirm firmware, wiring and installation instructions.
