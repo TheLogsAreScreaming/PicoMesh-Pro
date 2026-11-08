@@ -22,6 +22,6 @@
 
 1. **Preferred while untested:** Keep source on `main` and invite volunteers to test a pinned commit; no tag or GitHub release required.
 2. **Optional later:** Publish a clearly marked experimental source snapshot, only after explicit owner approval.
-3. **RC:** Keep `v0.1.0-rc.1` on HOLD until required hardware evidence is recorded.
+3. **RC:** `v0.1.0-rc.1` was published on 2026-11-08 at the owner's direction as an untested prerelease. Keep any final release on HOLD until required hardware evidence is recorded.
 
 See [RC evidence log](RC_EVIDENCE_LOG.md) and [readiness checklist](RC_READINESS_CHECKLIST.md). Nothing here authorizes automatic publication or an upstream contribution.

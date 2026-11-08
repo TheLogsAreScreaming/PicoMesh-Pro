@@ -42,8 +42,8 @@ Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-le
 
 ## Release decision
 
-- Release gate owner: **NOT RECORDED**
-- Blocking issues: **NOT ASSESSED**
-- Decision: **HOLD — pending evidence and approval**
+- Release gate owner: repository owner
+- Blocking issues: hardware behaviour is unverified (all rows above NOT TESTED)
+- Decision: **Published as an untested prerelease at the owner's direction, 2026-11-08.** The exact commit and CI run are on the [release page](https://github.com/TheLogsAreScreaming/PicoMesh-Pro-Releases/releases/tag/v0.1.0-rc.1). A final release stays on **HOLD** until the rows above have real results.
 
-Do not publish an RC or represent the hardware as validated until these fields have been completed with real results. Follow `docs/RC_READINESS_CHECKLIST.md` for the release gates.
+Do not publish a final release or represent the hardware as validated until these fields have been completed with real results. Follow `docs/RC_READINESS_CHECKLIST.md` for the release gates.

@@ -29,6 +29,6 @@ This checklist records release gates, not claims of completed hardware testing.
 ## Candidate publication
 - [ ] Record hardware and static-test results against a specific commit SHA
 - [ ] Write release notes, known limitations and installation steps
-- [ ] Publish `v0.1.0-rc.1` only after the release gates are reviewed
+- [x] `v0.1.0-rc.1` published 2026-11-08 at the owner's direction as an untested prerelease; the hardware gates above remain open and block a final release
 
 See `docs/UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md` and `docs/CHANNEL_RESTORE_HARDWARE_TEST_PLAN.md` for scenario details.
