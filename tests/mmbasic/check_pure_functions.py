@@ -73,7 +73,7 @@ def main():
     if "DONE" not in output:
         failures += 1
         print("FAIL program did not finish")
-    print(f"{len(CASES) + 1} checks, {failures} failed")
+    print(f"{len(CASES) + 2} checks, {failures} failed")
     return 1 if failures else 0
 
 

@@ -49,6 +49,7 @@ jobs:
           python-version: '3.12'
       - name: Install MMB4L (MMBasic for Linux, not PicoMite firmware)
         run: |
+          sudo apt-get update -q && sudo apt-get install -yq libsdl2-2.0-0
           name="mmb4l-${MMB4L_VERSION}-x86_64-glibc-2.29"
           curl -fsSL -o mmb4l.tgz "https://github.com/thwill1000/mmb4l/releases/download/v${MMB4L_VERSION}/${name}.tgz"
           echo "${MMB4L_SHA256}  mmb4l.tgz" | sha256sum -c -
