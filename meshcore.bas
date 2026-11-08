@@ -13,6 +13,7 @@ Dim gDeviceRawInfo$
 Dim gBuildDate$
 Dim gBoardName$
 Dim gFwVersion$
+Dim gPathHashMode = -1
 
 ' Global self info
 Dim gSelfCode
@@ -178,6 +179,7 @@ Sub ChannelsMenu
     Print "7 - Remove local channel mapping"
     Print "8 - Export local channel names"
     Print "9 - Restore local channel names"
+    Print "K - Set radio channel key"
     Print "B - Back"
     Print
 
@@ -203,6 +205,8 @@ Sub ChannelsMenu
         DoExportLocalChannels
       Case "9"
         DoRestoreLocalChannels
+      Case "K"
+        DoSetChannelKey
       Case "B"
         Exit Do
       Case Else
@@ -211,6 +215,86 @@ Sub ChannelsMenu
     End Select
   Loop
 End Sub
+
+' Write a private channel name and 128-bit key to a radio slot. The key is
+' never stored or printed by this program, and slot 0 (#public) is refused.
+Sub DoSetChannelKey
+  Local idxStr$, name$, keyHex$, confirm$, frame$
+  Local idxVal, i, c
+
+  Print "Set radio channel key"
+  Print "The key is visible on screen while you type it"
+  Line Input "Radio channel index (1-7): ", idxStr$
+  If Len(idxStr$) <> 1 Or InStr("1234567", idxStr$) = 0 Or idxStr$ = "" Then
+    Print "Index must be 1 to 7"
+    Print
+    Exit Sub
+  End If
+  idxVal = Val(idxStr$)
+
+  Print "Current contents of this slot:"
+  ReadRadioChannelAt idxVal
+
+  Line Input "New channel name: ", name$
+  If Len(name$) < 1 Or Len(name$) > 31 Then
+    Print "Name must be 1 to 31 characters"
+    Print
+    Exit Sub
+  End If
+  For i = 1 To Len(name$)
+    c = Asc(Mid$(name$, i, 1))
+    If c < 32 Or c = 127 Or c = 124 Then
+      Print "Name contains an invalid character"
+      Print
+      Exit Sub
+    End If
+  Next i
+
+  Line Input "Key (32 hex characters): ", keyHex$
+  If IsChannelKeyHex(keyHex$) = 0 Then
+    keyHex$ = ""
+    Print "Key must be 32 hex characters and not all zero"
+    Print
+    Exit Sub
+  End If
+
+  Print "This replaces radio slot "; idxVal; " and the radio saves it"
+  Line Input "Type APPLY to send: ", confirm$
+  If confirm$ <> "APPLY" Then
+    keyHex$ = ""
+    Print "Cancelled; radio channel unchanged"
+    Print
+    Exit Sub
+  End If
+
+  FlushInput
+  SendFrame Chr$(32) + Chr$(idxVal) + name$ + String$(32 - Len(name$), Chr$(0)) + HexToBin$(keyHex$)
+  keyHex$ = ""
+
+  frame$ = ReadResponseSkippingAsync$(FRAME_TIMEOUT)
+  If frame$ = "" Then
+    Print "No response; check the slot before relying on it"
+  ElseIf Asc(Mid$(frame$, 1, 1)) = 0 Then
+    Print "Channel saved on the radio"
+    Print "Use Import radio channel names to add it to the local list"
+  Else
+    Print "Radio refused the channel; code "; Asc(Mid$(frame$, 1, 1))
+  End If
+  Print
+End Sub
+
+' True for exactly 32 hex digits that are not all zero.
+Function IsChannelKeyHex(s$)
+  Local i, ch$, nonZero
+  IsChannelKeyHex = 0
+  If Len(s$) <> 32 Then Exit Function
+  For i = 1 To 32
+    ch$ = Mid$(s$, i, 1)
+    If InStr("0123456789abcdefABCDEF", ch$) = 0 Then Exit Function
+    If ch$ <> "0" Then nonZero = 1
+  Next i
+  IsChannelKeyHex = nonZero
+End Function
 
 ' Query one radio channel without exposing the returned secret.
 ' Read-only scan of the initial eight channel slots.
@@ -1405,6 +1489,7 @@ Sub RadioMenu
     Print "1 - Show current radio settings"
     Print "2 - Set radio params"
     Print "3 - Set TX power"
+    Print "4 - Set path hash size"
     Print "B - Back"
     Print
 
@@ -1418,6 +1503,8 @@ Sub RadioMenu
         DoSetRadioParams
       Case "3"
         DoSetTxPower
+      Case "4"
+        DoSetPathHashSize
       Case "B"
         Exit Do
       Case Else
@@ -1599,6 +1686,49 @@ Sub DoSetNodeName
     DumpHex frame$
     Print
   End If
+End Sub
+
+' Set the bytes used per hop in flood paths (firmware protocol v10+).
+Sub DoSetPathHashSize
+  Local sizeStr$, confirm$, frame$
+  Local sizeVal
+
+  If gPathHashMode < 0 Then
+    Print "Path hash size not reported by this radio"
+    Print "It needs newer firmware; run Device > Initialize radio to check again"
+    Print
+    Exit Sub
+  End If
+
+  Print "Current path hash size: "; gPathHashMode + 1; " byte(s)"
+  Print "Larger sizes use more of each packet. Match what your mesh uses"
+  Line Input "New size in bytes (1-3): ", sizeStr$
+  If Len(sizeStr$) <> 1 Or InStr("123", sizeStr$) = 0 Or sizeStr$ = "" Then
+    Print "Size must be 1, 2 or 3"
+    Print
+    Exit Sub
+  End If
+  sizeVal = Val(sizeStr$)
+
+  Print "The radio saves this setting"
+  Line Input "Type APPLY to send: ", confirm$
+  If confirm$ <> "APPLY" Then
+    Print "Cancelled; path hash size unchanged"
+    Print
+    Exit Sub
+  End If
+
+  SendFrame Chr$(61) + Chr$(0) + Chr$(sizeVal - 1)
+  frame$ = ReadResponseSkippingAsync$(FRAME_TIMEOUT)
+  If frame$ = "" Then
+    Print "No response"
+  ElseIf Asc(Mid$(frame$, 1, 1)) = 0 Then
+    gPathHashMode = sizeVal - 1
+    Print "Path hash size set to "; sizeVal; " byte(s)"
+  Else
+    Print "Radio refused the setting; code "; Asc(Mid$(frame$, 1, 1))
+  End If
+  Print
 End Sub
 
 Sub DoSetRadioParams
@@ -2662,6 +2792,9 @@ Sub ParseDeviceInfo(a$)
   gBuildDate$ = buildDate$
   gBoardName$ = boardName$
   gFwVersion$ = fwVersion$
+  ' Companion protocol v10+ reports the path hash mode at byte 82.
+  gPathHashMode = -1
+  If Asc(Mid$(a$, 2, 1)) >= 10 And Len(a$) >= 82 Then gPathHashMode = Asc(Mid$(a$, 82, 1))
 
   Print
   Print "=== DEVICE INFO ==="
