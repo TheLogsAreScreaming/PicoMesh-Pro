@@ -35,3 +35,25 @@ jobs:
           path: source-test-results.txt
           if-no-files-found: warn
           retention-days: 14
+
+  mmbasic-functions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      MMB4L_VERSION: 0.8-alpha.1
+      MMB4L_SHA256: 017b0d9088ccddf0994b5669007be579cde1556d24b677efcd76a8e6a9db8624
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install MMB4L (MMBasic for Linux, not PicoMite firmware)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -yq libsdl2-2.0-0
+          name="mmb4l-${MMB4L_VERSION}-x86_64-glibc-2.29"
+          curl -fsSL -o mmb4l.tgz "https://github.com/thwill1000/mmb4l/releases/download/v${MMB4L_VERSION}/${name}.tgz"
+          echo "${MMB4L_SHA256}  mmb4l.tgz" | sha256sum -c -
+          mkdir "$RUNNER_TEMP/mmb4l"
+          tar xzf mmb4l.tgz -C "$RUNNER_TEMP/mmb4l" --strip-components=1
+      - name: Run pure MMBasic functions
+        run: python tests/mmbasic/check_pure_functions.py "$RUNNER_TEMP/mmb4l/mmbasic"
