@@ -18,25 +18,32 @@ This document separates **implemented in source** from **validated on hardware**
 - [x] Hardware tester program and issue form
 - [x] Version banner at startup (`gAppVersion$`)
 
-## Still required for v0.1.0-rc.1
+## Still required for a final v0.1.0
+
+`v0.1.0-rc.1` was published on 2026-11-08 as a prerelease that has not been tested on hardware.
 
 - [x] Review current `main` and verify all intended fixes are merged (2026-11-07, `082e756`)
 - [x] Resolve the High findings (R1, R2) in the [reliability audit](docs/RELIABILITY_AUDIT.md), fixed in source; confirm on hardware below
-- [ ] Verify CI status on the exact candidate commit
+- [x] Verify CI status on the prerelease commit (`6882ae0`, run 42485276888); repeat for the final commit
 - [ ] Run PicoMite/PicoCalc + MeshCore companion hardware tests, recording firmware and wiring
 - [ ] Confirm startup, contacts, messages, channel send, backup/restore and reconnect behavior
 - [ ] Add real, privacy-safe screenshots (documentation synced with source on 2026-11-07)
-- [ ] Decide on atomic channel export (audit R13) or record it as a known limitation
-- [ ] Record limitations and publish release notes only after the release gates are met
+- [x] Channel export writes a temp file first (#95); a power cut in the short replace step is a recorded limitation
+- [ ] Fix what hardware testing finds, and publish another release candidate if the fixes are significant
+- [ ] Confirm wiring and installation instructions for the target firmware
+- [ ] Publish the final release only after the release gates are met and the owner approves
 
 See [release-readiness checklist](docs/RC_READINESS_CHECKLIST.md).
 
 ## Later enhancements (not release promises)
 
-- [ ] Confirm firmware support for private-channel key configuration and implement with secret redaction
-- [ ] Investigate firmware support for path hash size selection
-- [ ] Improve persistent preferences, where safe and supported
-- [ ] Add executable MMBasic protocol tests or hardware-backed fixtures beyond static source checks
-- [ ] Compare current [upstream PicoMeshCore](https://github.com/Vigoleis912/PicoMeshCore) and prepare a narrow contribution for maintainer review
+- [x] Private-channel key command, confirmed against MeshCore firmware source (#98); needs a hardware test
+- [x] Path hash size command, confirmed against MeshCore firmware source (#98); needs a hardware test
+- [ ] Improve persistent preferences, where safe and supported (startup hint for a saved channel list added in #95; automatic loading waits for hardware testing)
+- [x] Run pure MMBasic helpers under MMB4L in CI (#99)
+- [ ] Add executable protocol tests or hardware-backed fixtures; the UART code still can't run under MMB4L without a radio
+- [x] Compare with [upstream PicoMeshCore](https://github.com/Vigoleis912/PicoMeshCore) and choose a narrow contribution ([comparison](docs/UPSTREAM_COMPARISON.md))
+- [ ] Submit that contribution after hardware confirmation and owner approval
+- [x] Audit follow-ups: forward-clock prompt and band warning (#96), several pending confirmations (#97)
 
 **Policy:** Mark a source feature implemented when merged, but mark hardware validation complete only after actual device testing. Do not publish an RC as hardware-validated without evidence.
