@@ -51,6 +51,10 @@ Dim gRxBuf$
 ' radio to this length including the "<node name>: " prefix it adds.
 Const MAX_TEXT_LEN = 160
 
+' Ask before moving the radio clock forward by more than this (1 day), because
+' the radio cannot move it back.
+Const CLOCK_CONFIRM_AHEAD_S = 86400
+
 ' Longest the startup raw-byte dump may run.
 Const BOOT_READ_MAX_MS = 5000
 
@@ -1704,6 +1708,10 @@ Sub DoSetRadioParams
     Print "unknown (run Initialize radio to read it)"
   End If
   Print "New:      "; freqMHz; " MHz, BW "; bwKHz; " kHz, SF "; sfVal; ", CR "; crVal
+  If IsCommonLoraBand(freqMHz) = 0 Then
+    Print "Warning: this frequency is outside the usual LoRa bands"
+    Print "Check that it is legal where you are before applying it"
+  End If
   Print "The radio saves these settings"
   Line Input "Type APPLY to send: ", confirm$
   Print
@@ -1832,6 +1840,18 @@ Sub DoSetTxPower
 End Sub
 
 ' True when the Pico clock is inside the plausible window.
+' True inside a band commonly used for LoRa. This is a sanity check only: it
+' does not know your region, and a listed band may not be legal where you are.
+Function IsCommonLoraBand(f)
+  IsCommonLoraBand = 0
+  If f >= 433.05 And f <= 434.79 Then IsCommonLoraBand = 1
+  If f >= 470 And f <= 510 Then IsCommonLoraBand = 1
+  If f >= 779 And f <= 787 Then IsCommonLoraBand = 1
+  If f >= 863 And f <= 870 Then IsCommonLoraBand = 1
+  If f >= 902 And f <= 928 Then IsCommonLoraBand = 1
+  If f >= 2400 And f <= 2483.5 Then IsCommonLoraBand = 1
+End Function
+
 Function PicoClockValid()
   Local e
   e = DateTimeToUnix(Date$, Time$)
@@ -1967,6 +1987,8 @@ Sub DoSyncDeviceTime
   Local payload$, frame$
   Local epochVal
   Local codeVal
+  Local radioEpoch
+  Local confirm$
 
   epochVal = DateTimeToUnix(Date$, Time$)
 
@@ -1982,6 +2004,21 @@ Sub DoSyncDeviceTime
     Print "Set the Pico clock with the DATE$ and TIME$ commands, then sync again"
     Print
     Exit Sub
+  End If
+
+  ' Radios without a battery clock restart at an old date, so a large jump can
+  ' be correct. Show both times and let the user decide.
+  radioEpoch = ReadRadioEpoch()
+  If radioEpoch > 0 And epochVal - radioEpoch > CLOCK_CONFIRM_AHEAD_S Then
+    Print "Radio date:   "; UnixToDate$(Int(radioEpoch))
+    Print "The Pico clock is more than a day ahead of the radio"
+    Print "The radio cannot move its clock back, so check the Pico date above"
+    Line Input "Type SYNC to set the radio to the Pico time: ", confirm$
+    If confirm$ <> "SYNC" Then
+      Print "Time sync cancelled; radio time unchanged"
+      Print
+      Exit Sub
+    End If
   End If
 
   payload$ = Chr$(6) + U32ToLE$(epochVal)
@@ -2008,6 +2045,17 @@ Sub DoSyncDeviceTime
   Print
 End Sub
 
+
+' Radio clock as Unix time, or 0 when the radio gave no usable reply.
+Function ReadRadioEpoch()
+  Local frame$
+  ReadRadioEpoch = 0
+  SendFrame Chr$(5)
+  frame$ = ReadResponseSkippingAsync$(FRAME_TIMEOUT)
+  If Len(frame$) < 5 Then Exit Function
+  If Asc(Mid$(frame$, 1, 1)) <> 9 Then Exit Function
+  ReadRadioEpoch = U32LEVal(frame$, 2)
+End Function
 
 Sub DoGetDeviceTime
   Local payload$, frame$
