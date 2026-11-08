@@ -64,9 +64,12 @@ class HardeningTests(unittest.TestCase):
         self.assertIn("If asyncCount = 0 Then NoteNoReply", b)
 
     def test_channel_file_open_errors_are_handled(self):
-        for sub_name, mode in (("Sub DoRestoreLocalChannels", "Input"), ("Sub DoExportLocalChannels", "Output")):
+        for sub_name, name, mode in (
+            ("Sub DoRestoreLocalChannels", "CHANNELS.TXT", "Input"),
+            ("Sub DoExportLocalChannels", "CHANNELS.TMP", "Output"),
+        ):
             b = block(sub_name, "End Sub")
-            open_line = f'Open "CHANNELS.TXT" For {mode} As #2'
+            open_line = f'Open "{name}" For {mode} As #2'
             before = b[:b.index(open_line)].rstrip().splitlines()[-1].strip()
             self.assertEqual(before, "On Error Skip 1", sub_name)
             after = b[b.index(open_line) + len(open_line):].lstrip().splitlines()[0].strip()

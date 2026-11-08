@@ -147,7 +147,7 @@ The port is opened once at start. If the radio resets or loses power, every comm
 - `ReadResponseSkippingAsync$` has one overall deadline, so async frames no longer restart the full 3 s timeout each time (the worst case was about 63 s).
 - `UnixToDate$` works on a local copy of its argument.
 - Export and restore wrap `Open` in `On Error Skip 1` / `MM.Errno`, and report a missing or write-protected drive instead of stopping.
-- Still open: export overwrites `CHANNELS.TXT` in place.
+- Export now writes `CHANNELS.TMP`, then replaces `CHANNELS.TXT` only when the new file is complete. PicoMite has no atomic replace, so a power cut between `Kill` and `Rename` can leave only `CHANNELS.TMP`; restore reports that case. Needs a hardware check on the target drive.
 
 Covered by `tests/test_r13_hardening.py`, which also checks a Python port of `UnixToDate$` against the calendar for 500+ timestamps.
 

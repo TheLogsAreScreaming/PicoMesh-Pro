@@ -28,7 +28,7 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
 - Python tests inspect source-level invariants; they do not execute MMBasic or validate radio interoperability.
 - Private channel key management and path hash size controls are not confirmed features.
 - No verified device screenshots are available yet.
-- Channel backup export overwrites `CHANNELS.TXT` in place; a power cut during export can lose the previous backup.
+- Channel backup export writes `CHANNELS.TMP` first and replaces `CHANNELS.TXT` only when it is complete. A power cut in the brief replace step can leave only `CHANNELS.TMP`, which the restore screen points out.
 - Local channel changes are not saved across restarts unless exported.
 - Only the most recent unconfirmed direct message is tracked for late confirmation.
 
