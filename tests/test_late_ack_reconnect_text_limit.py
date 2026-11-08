@@ -22,14 +22,14 @@ class PendingAckModel:
     HandleAsyncFrame and CheckLateAck."""
 
     def __init__(self):
-        self.pending = b""
+        self.pending = []
         self.log = []
 
     def check_late_ack(self, frame):
-        if len(self.pending) != 4 or len(frame) < 5 or frame[0] != 130 or frame[1:5] != self.pending:
+        if len(frame) < 5 or frame[0] != 130 or frame[1:5] not in self.pending:
             return False
         self.log.append("late-delivered")
-        self.pending = b""
+        self.pending.remove(frame[1:5])
         return True
 
     def send(self, ack, pushes_during_wait):
@@ -37,12 +37,11 @@ class PendingAckModel:
         for push in pushes_during_wait:
             if push[0] == 130 and push[1:5] == ack:
                 self.log.append("delivered")
-                self.pending = b""
                 return
             if push[0] == 130 and not self.check_late_ack(push):
                 self.log.append("ignored")
         self.log.append("unconfirmed")
-        self.pending = ack
+        self.pending = (self.pending + [ack])[-9:]
 
     def async_push(self, push):
         if push[0] == 130:
@@ -69,7 +68,7 @@ class LateAckTests(unittest.TestCase):
         m.send(A, [])
         m.send(B, [confirm(A)])
         self.assertEqual(m.log, ["unconfirmed", "late-delivered", "unconfirmed"])
-        self.assertEqual(m.pending, B)
+        self.assertEqual(m.pending, [B])
 
     def test_unknown_confirmation_is_ignored(self):
         m = PendingAckModel()
@@ -79,17 +78,32 @@ class LateAckTests(unittest.TestCase):
     def test_delivered_clears_pending(self):
         m = PendingAckModel()
         m.send(A, [confirm(A)])
-        self.assertEqual(m.pending, b"")
+        self.assertEqual(m.pending, [])
+
+    def test_two_unconfirmed_messages_are_both_reported(self):
+        m = PendingAckModel()
+        m.send(A, [])
+        m.send(B, [])
+        m.async_push(confirm(A))
+        m.async_push(confirm(B))
+        self.assertEqual(m.log.count("late-delivered"), 2)
+
+    def test_delivery_of_new_message_keeps_older_pending(self):
+        m = PendingAckModel()
+        m.send(A, [])
+        m.send(B, [confirm(B)])
+        self.assertEqual(m.pending, [A])
 
     def test_source_matches_model(self):
         late = block("Function CheckLateAck(a$)", "End Function")
-        self.assertIn("If Len(gPendingAck$) <> 4 Or Len(a$) < 5 Then Exit Function", late)
-        self.assertIn("If Mid$(a$, 2, 4) <> gPendingAck$ Then Exit Function", late)
-        self.assertIn('gPendingAck$ = ""', late)
+        self.assertIn("If Len(gPendingAck$(i)) = 4 And gPendingAck$(i) = k$ Then", late)
+        self.assertIn('gPendingAck$(i) = ""', late)
+        self.assertIn("Dim gPendingAck$(PENDING_ACK_MAX) Length 4", SOURCE)
+        add = block("Sub AddPendingAck(ackKey$)", "End Sub")
+        self.assertIn("(gPendingNext + 1) Mod (PENDING_ACK_MAX + 1)", add)
         send = block("Sub DoSendMessage", "End Sub")
         miss = send[send.index("If deliveredOk = 0 Then"):]
-        self.assertLess(miss.index("gPendingAck$ = ackKey$"), miss.index("Else"))
-        self.assertIn('gPendingAck$ = ""', miss[miss.index("Else"):])
+        self.assertIn("AddPendingAck ackKey$", miss[:miss.index("End If")])
         wait = block("Function WaitForSendConfirmation(", "End Function")
         self.assertIn("If CheckLateAck(frame$) = 0 Then", wait)
         handler = block("Sub HandleAsyncFrame(a$)", "End Sub")

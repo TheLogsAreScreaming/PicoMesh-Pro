@@ -128,7 +128,7 @@ When it fails, the program stops at the MMBasic prompt with the UART still open,
 
 `DoSendMessage` waits a fixed 2,000 ms for delivery. `RESP_CODE_SENT` also carries an estimated timeout (Protocol), and flood-routed messages often take longer than 2 s, so "Queued, no delivery confirmation yet" will be common. Confirmations that arrive later are dropped by `HandleAsyncFrame`, or wiped by R3's flush, so the user never learns the message did arrive.
 
-**Status:** the wait window is fixed in source. It now uses the radio's estimated timeout, clamped to 2–15 s (`SEND_CONFIRM_MIN_MS` / `SEND_CONFIRM_MAX_MS`). Late confirmations are now reported too: the ACK of the last unconfirmed direct message is kept in `gPendingAck$`, and `CheckLateAck` prints "Late delivery confirmation" when a matching push arrives later, whether during another wait or while idle. Only the most recent unconfirmed message is tracked. A late confirmation can still be lost if a contact sync or channel scan clears the input buffer before it is read.
+**Status:** the wait window is fixed in source. It now uses the radio's estimated timeout, clamped to 2–15 s (`SEND_CONFIRM_MIN_MS` / `SEND_CONFIRM_MAX_MS`). Late confirmations are now reported too: the ACKs of unconfirmed direct messages are kept in the `gPendingAck$()` array, and `CheckLateAck` prints "Late delivery confirmation" when a matching push arrives later, whether during another wait or while idle. The nine most recent unconfirmed messages are tracked. A late confirmation can still be lost if a contact sync or channel scan clears the input buffer before it is read.
 
 **Original proposed fix:** use the radio's estimated timeout, with a sensible cap. After R2 is fixed, report late matching confirmations when they are seen.
 

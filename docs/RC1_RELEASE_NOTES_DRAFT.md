@@ -30,7 +30,7 @@ PicoMesh Pro is an MMBasic terminal client for a PicoMite/PicoCalc connected ove
 - No verified device screenshots are available yet.
 - Channel backup export overwrites `CHANNELS.TXT` in place; a power cut during export can lose the previous backup.
 - Local channel changes are not saved across restarts unless exported.
-- Only the most recent unconfirmed direct message is tracked for late confirmation.
+- Late confirmations are tracked for the nine most recent unconfirmed direct messages, and the report does not name the recipient.
 
 ## Before publication
 
