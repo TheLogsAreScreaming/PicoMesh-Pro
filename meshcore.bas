@@ -3,7 +3,7 @@ Option Explicit
 ' PicoMesh Pro version shown at startup and in Device > Show status.
 ' Testers report this together with the source commit SHA.
 Dim gAppVersion$
-gAppVersion$ = "0.1.0-rc.1"
+gAppVersion$ = "0.1.0-rc.2"
 
 Const FRAME_TIMEOUT = 3000
 

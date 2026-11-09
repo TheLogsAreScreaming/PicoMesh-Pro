@@ -1,6 +1,6 @@
 # PicoMesh Pro — release evidence log
 
-Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-level test workflow is **not** evidence that the MMBasic program runs on hardware. Leave fields **NOT TESTED** until actual evidence is available. The last six hardware rows cover the [reliability-audit](RELIABILITY_AUDIT.md) fixes; scenarios 8–16 in the [UART test plan](UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md) describe them.
+Use this form for the exact commit under test, currently `v0.1.0-rc.2`. A green source-level test workflow is **not** evidence that the MMBasic program runs on hardware. Leave fields **NOT TESTED** until actual evidence is available. Six rows cover the [reliability-audit](RELIABILITY_AUDIT.md) fixes (scenarios 8–16 in the [UART test plan](UART_COMMAND_RESPONSE_HARDWARE_TEST_PLAN.md)), and the last four cover features added after rc.1 (scenarios 17–21).
 
 ## Candidate identity
 
@@ -39,6 +39,10 @@ Use this form for the exact commit proposed for `v0.1.0-rc.1`. A green source-le
 | Delivery matched to message, late confirmation reported | NOT TESTED | |
 | Unset-clock sync skip and radio settings APPLY | NOT TESTED | |
 | Channel import summary and file-error handling | NOT TESTED | |
+| Temp-file channel export and interrupted-export recovery | NOT TESTED | |
+| Forward-clock SYNC prompt and unusual-band warning | NOT TESTED | |
+| Late confirmations for several direct messages | NOT TESTED | |
+| Channel key and path hash size commands | NOT TESTED | |
 
 ## Release decision
 
