@@ -31,7 +31,7 @@ body:
     attributes:
       label: PicoMesh Pro version
       description: Shown on the first line when the program starts (also under Device > Show status).
-      placeholder: 0.1.0-rc.1
+      placeholder: 0.1.0-rc.2
     validations:
       required: true
   - type: input
@@ -227,6 +227,54 @@ body:
     id: result_import_files
     attributes:
       label: "Channel import summary and file-error handling"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_safe_export
+    attributes:
+      label: "Temp-file channel export and interrupted-export recovery"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_sync_band
+    attributes:
+      label: "Forward-clock SYNC prompt and unusual-band warning"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_multi_late
+    attributes:
+      label: "Late confirmations for several direct messages"
+      options:
+        - NOT TESTED
+        - PASS
+        - FAIL
+        - PARTIAL
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: result_key_hash
+    attributes:
+      label: "Channel key and path hash size commands"
       options:
         - NOT TESTED
         - PASS

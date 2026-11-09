@@ -22,7 +22,7 @@ We need volunteers with a PicoMite/PicoCalc and a compatible MeshCore UART compa
 6. Export/restore channel name/index metadata, including malformed input; verify reserved #public behavior.
 7. Partial-frame, timeout and reconnect tests, only if safely reproducible.
 8. Note stability and any unexpected output during an extended smoke test.
-9. If time allows, run scenarios 8–16 in the UART test plan, which cover the reliability-audit fixes.
+9. If time allows, run scenarios 8–21 in the UART test plan, which cover the reliability-audit fixes.
 
 ## How to report
 

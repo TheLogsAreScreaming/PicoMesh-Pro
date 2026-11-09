@@ -30,5 +30,15 @@ See [reliability audit](RELIABILITY_AUDIT.md) for background on each item.
 15. **Channel import (R7):** run **Import radio channel names** and confirm the summary lists every slot outcome.
 16. **File errors (R13):** restore with no `CHANNELS.TXT`, and export to a missing or write-protected drive if possible; the program reports the problem and keeps running.
 
+## Scenarios for features added after rc.1
+
+Use a test radio and a throwaway channel key for scenarios 20 and 21. Do not record real keys.
+
+17. **Temp-file export:** export twice and confirm `CHANNELS.TXT` holds the latest list and no `CHANNELS.TMP` remains. Delete `CHANNELS.TXT`, leave a copy named `CHANNELS.TMP`, and confirm restore reports the interrupted export. Confirm the saved-list hint appears at startup when `CHANNELS.TXT` exists.
+18. **Clock jump and band warning:** with the radio clock more than a day behind a valid Pico clock, confirm both dates and the `SYNC` prompt appear. Answer anything else and confirm the radio time doesn't change. In **Set radio params**, enter 600 MHz, confirm the warning, then cancel at `APPLY`.
+19. **Several late confirmations:** send two direct messages to an out-of-range peer, bring it back, and confirm each confirmation is reported once. A message delivered in the meantime must not clear the older ones.
+20. **Channel key:** set a throwaway key on slot 1 to 7 and confirm the radio saves it. Confirm slot 0, a short key and an all-zero key are refused locally, and that a second radio with the same key can exchange messages. Confirm the key appears nowhere except while typing.
+21. **Path hash size:** on firmware that reports it, confirm the current size shows, then change it and change it back. On older firmware, confirm the command says it isn't reported and sends nothing.
+
 ## Release gate
 Do not mark these scenarios passed until observed on physical hardware. Record results and investigate failures before a release candidate.
